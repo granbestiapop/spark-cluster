@@ -1,0 +1,30 @@
+version: '3.2'
+services:
+  spark-master:
+    image: bitnami/spark:latest
+    container_name: spark-master
+    ports:
+      - 7077:7077
+      - 8080:8080
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_PORT=7077
+    networks:
+      - spark-net
+
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-slave
+    ports:
+      - 8081:8081
+    environment:
+      - SPARK_MODE=worker
+      - CORES=1
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    networks:
+      - spark-net
+    volumes:
+      - ./client/data:/data
+networks:
+  spark-net:
+    driver: bridge
